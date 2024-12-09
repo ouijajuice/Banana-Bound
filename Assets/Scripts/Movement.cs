@@ -62,10 +62,7 @@ public class Movement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
 
-        if(IsOnWall() == true)
-        {
-            rb.velocity = new Vector2(rb.velocity.x * 0.1f, 0);
-        }
+        
 
         //Debug.Log(horizontal);
 
@@ -88,6 +85,16 @@ public class Movement : MonoBehaviour
         if (Input.GetButton(inputNameInteract) && IsGrounded())
         {
             PullOtherPlayer();
+            rb.velocity = Vector2.zero;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+        }
+        else
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+        }
+        if (IsOnWall() == true)
+        {
+            rb.velocity = new Vector2(rb.velocity.x * 0.1f, 0);
         }
     }
 
@@ -110,22 +117,45 @@ public class Movement : MonoBehaviour
     private bool IsOnWall()
     {
         //detect if a wall is within range of the wall detection transform
-        if (Physics2D.OverlapCircle(wallCheckR.position, 0.05f, wallLayer))
+        if (isFacingRight)
         {
-            //animator.SetFloat("Horizontal", 0f);
-            //animator.SetBool("animDashing", false);
-            //animator.SetBool("animJumpUp", false);
-            //animator.SetBool("animFalling", false);
-            //animator.SetBool("animOnWall", true);
-            //rb.bodyType = RigidbodyType2D.Kinematic;
-            return true;
+            if (Physics2D.OverlapCircle(wallCheckR.position, 0.05f, wallLayer) && (horizontal > 0))
+            {
+                //animator.SetFloat("Horizontal", 0f);
+                //animator.SetBool("animDashing", false);
+                //animator.SetBool("animJumpUp", false);
+                //animator.SetBool("animFalling", false);
+                //animator.SetBool("animOnWall", true);
+                //rb.bodyType = RigidbodyType2D.Kinematic;
+                return true;
+            }
+            else
+            {
+                //animator.SetBool("animOnWall", false);
+                //rb.bodyType = RigidbodyType2D.Dynamic;
+                return false;
+            }
         }
-        else
+        if (!isFacingRight)
         {
-            //animator.SetBool("animOnWall", false);
-            //rb.bodyType = RigidbodyType2D.Dynamic;
-            return false;
+            if (Physics2D.OverlapCircle(wallCheckR.position, 0.05f, wallLayer) && (horizontal < 0))
+            {
+                //animator.SetFloat("Horizontal", 0f);
+                //animator.SetBool("animDashing", false);
+                //animator.SetBool("animJumpUp", false);
+                //animator.SetBool("animFalling", false);
+                //animator.SetBool("animOnWall", true);
+                //rb.bodyType = RigidbodyType2D.Kinematic;
+                return true;
+            }
+            else
+            {
+                //animator.SetBool("animOnWall", false);
+                //rb.bodyType = RigidbodyType2D.Dynamic;
+                return false;
+            }
         }
+        return false;
     }
 
     private bool IsAtMaxDistance()
