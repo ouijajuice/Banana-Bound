@@ -11,16 +11,23 @@ public class LineScriptB : MonoBehaviour
     [SerializeField] private LineRenderer lineRenderer;
     public Color defaultColor;
     public Color tensionColor;
+    public float sensitivity;
     private void Start()
     {
         line.SetUpLine(points);
-        lineRenderer.SetColors(defaultColor,defaultColor);
+        lineRenderer.startColor = defaultColor;
+        lineRenderer.endColor = defaultColor;
     }
 
     private void Update()
     {
-        float distance = Vector2.Distance(points[0].position, points[1].position);
-        lineRenderer.SetColors(Color.Lerp(defaultColor,tensionColor,distance), Color.Lerp(defaultColor, tensionColor, distance));
+        float distance = Vector3.Distance(points[0].position, points[1].position);
+        float t = Mathf.Clamp01(distance / sensitivity);
+
+        Color currentColor = Color.Lerp(defaultColor, tensionColor, t);
+
+        lineRenderer.startColor = currentColor;
+        lineRenderer.endColor = currentColor;
     }
 
 }
