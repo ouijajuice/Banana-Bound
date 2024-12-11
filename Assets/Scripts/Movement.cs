@@ -82,7 +82,7 @@ public class Movement : MonoBehaviour
             Vector2 pullForce = toOtherPlayer.normalized * (toOtherPlayer.magnitude - maxDistance);
             rb.AddForce(pullForce * speed, ForceMode2D.Force);
         }
-        if (Input.GetButton(inputNameInteract) && IsGrounded())
+        if (Input.GetButton(inputNameInteract) && (IsGrounded() || IsOnWall()))
         {
             PullOtherPlayer();
             rb.velocity = Vector2.zero;
