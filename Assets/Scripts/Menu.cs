@@ -36,4 +36,13 @@ public class Menu : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
     }
+
+    public void Enable(GameObject obj)
+    {
+        obj.SetActive(true);
+    }
+    public void Disable(GameObject obj)
+    {
+        obj.SetActive(false);
+    }
 }

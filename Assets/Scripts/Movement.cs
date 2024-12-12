@@ -44,9 +44,15 @@ public class Movement : MonoBehaviour
     [SerializeField]
     private float pullForce;
     private Rigidbody2D otherPlayerRb;
+
+    private Animator animator;
+    public bool jumping;
+    public bool running;
+    public bool grab;
     private void Start()
     {
         otherPlayerRb = otherPlayerObject.GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
     void Update()
     {
@@ -55,18 +61,41 @@ public class Movement : MonoBehaviour
         if (Input.GetButtonDown(inputNameJump) && IsGrounded())
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            jumping = true;
         }
 
         if (Input.GetButtonUp(inputNameJump) && rb.velocity.y > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
-
         
+        if (IsGrounded() == false && rb.velocity.y > 0f)
+        {
+            animator.SetBool("Jumping", true);
+        }
+        if (IsGrounded() == false && rb.velocity.y < 0f)
+        {
+            animator.SetBool("Falling", true);
+        }
+        if (IsGrounded())
+        {
+            animator.SetBool("Falling", false);
+            animator.SetBool("Jumping", false);
+        }
 
         //Debug.Log(horizontal);
 
         Flip();
+
+        if (Mathf.Abs(horizontal) > 0.1f)
+        {
+            running = true;
+        }
+        else
+        {
+            running = false;
+        }
+        animator.SetFloat("Horizontal", Mathf.Abs(horizontal));
     }
 
     private void FixedUpdate()
@@ -95,23 +124,29 @@ public class Movement : MonoBehaviour
         if (IsOnWall() == true)
         {
             rb.velocity = new Vector2(rb.velocity.x * 0.1f, 0);
+            grab = true;
         }
+        grab = false;
     }
 
     private bool IsGrounded()
     {
-        if(Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer))
+        
+        if (Physics2D.OverlapBox(groundCheck.position, new Vector2(0.95f, 0.01f), 0, groundLayer))
         {
+            jumping = false;
             return true;
         }
-        else if (Physics2D.OverlapCircle(groundCheck.position, 0.2f, otherPlayerLayer))
+        else if (Physics2D.OverlapBox(groundCheck.position, new Vector2(0.95f, 0.01f), 0, otherPlayerLayer))
         {
+            jumping = false;
             return true;
         }
         else 
         { 
             return false; 
         }
+        
     }
 
     private bool IsOnWall()
@@ -121,37 +156,42 @@ public class Movement : MonoBehaviour
         {
             if (Physics2D.OverlapCircle(wallCheckR.position, 0.05f, wallLayer) && (horizontal > 0))
             {
-                //animator.SetFloat("Horizontal", 0f);
+                animator.SetFloat("Horizontal", 0f);
                 //animator.SetBool("animDashing", false);
-                //animator.SetBool("animJumpUp", false);
-                //animator.SetBool("animFalling", false);
-                //animator.SetBool("animOnWall", true);
+                animator.SetBool("Jumping", false);
+                animator.SetBool("Falling", false);
+                animator.SetBool("OnWall", true);
                 //rb.bodyType = RigidbodyType2D.Kinematic;
+                grab = true;
                 return true;
             }
             else
             {
-                //animator.SetBool("animOnWall", false);
+                animator.SetBool("OnWall", false);
                 //rb.bodyType = RigidbodyType2D.Dynamic;
+                grab = false;
                 return false;
             }
+            
         }
         if (!isFacingRight)
         {
             if (Physics2D.OverlapCircle(wallCheckR.position, 0.05f, wallLayer) && (horizontal < 0))
             {
-                //animator.SetFloat("Horizontal", 0f);
+                animator.SetFloat("Horizontal", 0f);
                 //animator.SetBool("animDashing", false);
-                //animator.SetBool("animJumpUp", false);
-                //animator.SetBool("animFalling", false);
-                //animator.SetBool("animOnWall", true);
+                animator.SetBool("Jumping", false);
+                animator.SetBool("Falling", false);
+                animator.SetBool("OnWall", true);
                 //rb.bodyType = RigidbodyType2D.Kinematic;
+                grab = true;
                 return true;
             }
             else
             {
-                //animator.SetBool("animOnWall", false);
+                animator.SetBool("OnWall", false);
                 //rb.bodyType = RigidbodyType2D.Dynamic;
+                grab = false;
                 return false;
             }
         }

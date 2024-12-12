@@ -9,7 +9,8 @@ public class AudioPlay : MonoBehaviour
     public bool multipleAudio;
     public string tagToPlayFor;
     public AudioClip[] audioClips;
-
+    public int clipIndex;
+    public bool showSubtitle = false;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (singleAudio)
@@ -23,8 +24,10 @@ public class AudioPlay : MonoBehaviour
         {
             if (collision.gameObject.tag == tagToPlayFor)
             {
-                this.gameObject.GetComponent<AudioSource>().clip = audioClips[UnityEngine.Random.Range(0,audioClips.Length)];
+                clipIndex = UnityEngine.Random.Range(0, audioClips.Length);
+                this.gameObject.GetComponent<AudioSource>().clip = audioClips[clipIndex];
                 this.gameObject.GetComponent<AudioSource>().Play();
+                showSubtitle = true;
             }
         }
     }
@@ -42,8 +45,10 @@ public class AudioPlay : MonoBehaviour
         {
             if (collision.gameObject.tag == tagToPlayFor)
             {
-                this.gameObject.GetComponent<AudioSource>().clip = audioClips[UnityEngine.Random.Range(0, audioClips.Length)];
+                clipIndex = UnityEngine.Random.Range(0, audioClips.Length);
+                this.gameObject.GetComponent<AudioSource>().clip = audioClips[clipIndex];
                 this.gameObject.GetComponent<AudioSource>().Play();
+                showSubtitle = true;
             }
         }
     }
